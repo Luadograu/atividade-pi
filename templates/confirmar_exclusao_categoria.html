@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Excluir Categoria{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h3 class="card-title">Confirmar Exclusão</h3>
+                
+                {% if object.pizzas.exists %}
+                    <div class="alert alert-warning">
+                        Esta categoria possui {{ object.pizzas.count }} pizza(s) vinculada(s).
+                        Não é possível excluí-la enquanto houver pizzas cadastradas.
+                    </div>
+                    <a href="{% url 'pizzaria:lista_categorias' %}" class="btn btn-secondary">Voltar</a>
+                {% else %}
+                    <p class="card-text">
+                        Tem certeza que deseja excluir a categoria "{{ object.nome }}"?
+                    </p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Sim, Excluir</button>
+                        <a href="{% url 'pizzaria:lista_categorias' %}" class="btn btn-secondary">Cancelar</a>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

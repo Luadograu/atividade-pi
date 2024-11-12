@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Pizzas{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Lista de Pizzas</h2>
+    </div>
+    <div class="col text-end">
+        <a href="{% url 'pizzaria:criar_pizza' %}" class="btn btn-primary">
+            Nova Pizza
+        </a>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Foto</th>
+                <th>Nome</th>
+                <th>Categoria</th>
+                <th>Tamanho</th>
+                <th>Preço</th>
+                <th>Disponível</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pizza in pizzas %}
+            <tr>
+                <td>
+                    {% if pizza.foto %}
+                        <img src="{{ pizza.foto.url }}" 
+                             alt="Foto da {{ pizza.nome }}"
+                             class="img-thumbnail"
+                             style="max-height: 50px;">
+                    {% else %}
+                        <div class="text-muted small">Sem foto</div>
+                    {% endif %}
+                </td>
+                <td>{{ pizza.nome }}</td>
+                <td>{{ pizza.categoria.nome }}</td>
+                <td>{{ pizza.get_tamanho_display }}</td>
+                <td>R$ {{ pizza.preco }}</td>
+                <td>
+                    {% if pizza.disponivel %}
+                        <span class="badge bg-success">Sim</span>
+                    {% else %}
+                        <span class="badge bg-danger">Não</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'pizzaria:atualizar_pizza' pizza.pk %}" 
+                       class="btn btn-sm btn-warning">
+                        Editar
+                    </a>
+                    <a href="{% url 'pizzaria:excluir_pizza' pizza.pk %}" 
+                       class="btn btn-sm btn-danger">
+                        Excluir
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">Nenhuma pizza cadastrada.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
