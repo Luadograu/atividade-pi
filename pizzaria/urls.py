@@ -24,4 +24,23 @@ urlpatterns = [
         views.ExcluirCategoriaView.as_view(),
         name="excluir_categoria",
     ),
+    path("login/", views.login_view, name="login"),
+    path("logout/", views.logout_view, name="logout"),
+    path("cadastrar/", views.CadastrarView.as_view(), name="cadastrar_usuario"),
+    path("carrinho/", views.ver_carrinho, name="ver_carrinho"),
+    path(
+        "carrinho/adicionar/<int:pizza_id>/",
+        views.adicionar_ao_carrinho,
+        name="adicionar_ao_carrinho",
+    ),
+    path(
+        "carrinho/remover/<int:item_id>/",
+        views.remover_do_carrinho,
+        name="remover_do_carrinho",
+    ),
+    path(
+        "carrinho/atualizar/<int:item_id>/",
+        views.atualizar_quantidade,
+        name="atualizar_quantidade",
+    ),
 ]

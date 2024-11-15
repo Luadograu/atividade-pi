@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Carrinho{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Meu Carrinho</h2>
+    
+    {% if carrinho.itens.exists %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Pizza</th>
+                        <th>Preço Unitário</th>
+                        <th>Quantidade</th>
+                        <th>Subtotal</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in carrinho.itens.all %}
+                    <tr>
+                        <td>
+                            {{ item.pizza.nome }} - {{ item.pizza.get_tamanho_display }}
+                        </td>
+                        <td>R$ {{ item.preco_unitario }}</td>
+                        <td>
+                                <input type="number" class="form-control text-center" 
+                                       value="{{ item.quantidade }}" min="1"
+                                       onchange="atualizarQuantidade({{ item.id }}, this.value)"
+                                        style="max-width: 150px;"
+                                       >
+                        </td>
+                        <td>R$ <span class="subtotal-{{ item.id }}">{{ item.subtotal }}</span></td>
+                        <td>
+                            <a href="{% url 'pizzaria:remover_do_carrinho' item.id %}" 
+                               class="btn btn-danger btn-sm">
+                                Remover
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                        <td colspan="2">
+                            <strong>R$ <span id="total-carrinho">{{ carrinho.total }}</span></strong>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        
+        <div class="text-end mt-4">
+            <a href="{% url 'pizzaria:lista_pizzas' %}" class="btn btn-secondary">
+                Continuar Comprando
+            </a>
+            <button class="btn btn-success" onclick="finalizarPedido()">
+                Finalizar Pedido
+            </button>
+        </div>
+    {% else %}
+        <div class="text-center">
+            <p>Seu carrinho está vazio.</p>
+            <a href="{% url 'pizzaria:lista_pizzas' %}" class="btn btn-pizza">
+                Ver Cardápio
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+{% block extra_js %}
+<script>
+function atualizarQuantidade(itemId, quantidade) {
+    fetch(`/carrinho/atualizar/${itemId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: `quantidade=${quantidade}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.querySelector(`.subtotal-${itemId}`).textContent = data.subtotal.toFixed(2);
+        document.getElementById('total-carrinho').textContent = data.total_carrinho.toFixed(2);
+    });
+}
+
+function finalizarPedido() {
+    alert('Funcionalidade em desenvolvimento!');
+}
+</script>
+{% endblock %}
+{% endblock %}

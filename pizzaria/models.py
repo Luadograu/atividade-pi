@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.contrib.auth import get_user_model
 
 
 class Categoria(models.Model):
@@ -72,3 +73,70 @@ class Pizza(models.Model):
         verbose_name = "Pizza"
         verbose_name_plural = "Pizzas"
         ordering = ["nome", "tamanho"]
+
+
+class Carrinho(models.Model):
+    usuario = models.ForeignKey(
+        get_user_model(),
+        verbose_name="Usuário",
+        on_delete=models.CASCADE,
+        related_name="carrinhos",
+        help_text="Usuário dono do carrinho",
+    )
+    data_criacao = models.DateTimeField(
+        "Data de Criação", auto_now_add=True, help_text="Data de criação do carrinho"
+    )
+    finalizado = models.BooleanField(
+        "Finalizado", default=False, help_text="Indica se o carrinho foi finalizado"
+    )
+
+    @property
+    def total(self):
+        return sum(item.subtotal for item in self.itens.all())
+
+    def __str__(self):
+        return f"Carrinho de {self.usuario.username}"
+
+    class Meta:
+        verbose_name = "Carrinho"
+        verbose_name_plural = "Carrinhos"
+
+
+class ItemCarrinho(models.Model):
+    carrinho = models.ForeignKey(
+        Carrinho,
+        verbose_name="Carrinho",
+        on_delete=models.CASCADE,
+        related_name="itens",
+        help_text="Carrinho ao qual este item pertence",
+    )
+    pizza = models.ForeignKey(
+        Pizza,
+        verbose_name="Pizza",
+        on_delete=models.CASCADE,
+        related_name="itens_carrinho",
+        help_text="Pizza selecionada",
+    )
+    quantidade = models.PositiveIntegerField(
+        "Quantidade",
+        default=1,
+        validators=[MinValueValidator(1)],
+        help_text="Quantidade de pizzas",
+    )
+    preco_unitario = models.DecimalField(
+        "Preço Unitário",
+        max_digits=6,
+        decimal_places=2,
+        help_text="Preço unitário da pizza no momento da adição ao carrinho",
+    )
+
+    @property
+    def subtotal(self):
+        return self.preco_unitario * self.quantidade
+
+    def __str__(self):
+        return f"{self.quantidade}x {self.pizza.nome}"
+
+    class Meta:
+        verbose_name = "Item do Carrinho"
+        verbose_name_plural = "Itens do Carrinho"
