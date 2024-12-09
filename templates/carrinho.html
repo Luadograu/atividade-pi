@@ -57,9 +57,11 @@
             <a href="{% url 'pizzaria:lista_pizzas' %}" class="btn btn-secondary">
                 Continuar Comprando
             </a>
-            <button class="btn btn-success" onclick="finalizarPedido()">
-                Finalizar Pedido
-            </button>
+            <form action="." method="post"> {% csrf_token %}
+                <button class="btn btn-success" type="submit" onclick="finalizarPedido()">
+                    Finalizar Pedido
+                </button>
+            </form>
         </div>
     {% else %}
         <div class="text-center">
@@ -90,7 +92,7 @@ function atualizarQuantidade(itemId, quantidade) {
 }
 
 function finalizarPedido() {
-    alert('Funcionalidade em desenvolvimento!');
+    alert('Pedido finalizado!');
 }
 </script>
 {% endblock %}

@@ -218,6 +218,11 @@ def ver_carrinho(request):
     carrinho, created = Carrinho.objects.get_or_create(
         usuario=request.user, finalizado=False
     )
+
+    if (request.method == 'POST'):
+        carrinho.finalizado = True
+        carrinho.save()
+        return redirect("pizzaria:lista_pizzas")
     return render(request, "carrinho.html", {"carrinho": carrinho})
 
 
